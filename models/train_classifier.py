@@ -94,11 +94,12 @@ def build_model() -> GridSearchCV:
     ])
 
     parameters = {
-        'vect__ngram_range': ((1, 1), (1, 2))
+        # 'vect__ngram_range': ((1, 1), (1, 2)),
+        'vect__max_df': [0.9, 1.0]
         # 'vect__tokenizer': [tokenize, tokenize_without_stopwords, tokenize_without_numbers]
     }
 
-    return GridSearchCV(pipeline, param_grid=parameters)
+    return GridSearchCV(pipeline, param_grid=parameters, verbose=1, n_jobs=-2)
 
 def evaluate_model(
         model: GridSearchCV,
@@ -127,7 +128,8 @@ def save_model(model: GridSearchCV, model_filepath: str) -> None:
     :param model: trained model
     :param model_filepath: path where the model will be saved as pickle file
     """
-    pickle.dump(model, model_filepath)
+    with open(model_filepath, 'wb') as file:
+        pickle.dump(model, file, pickle.HIGHEST_PROTOCOL)
 
 def main():
     logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S', level=logging.INFO)
