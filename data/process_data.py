@@ -1,4 +1,4 @@
-import sys
+import logging
 
 import pandas as pd
 from sqlalchemy import create_engine
@@ -19,16 +19,17 @@ def load_data(messages_filepath: str, categories_filepath: str) -> pd.DataFrame:
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Transform data in correct format and remove unusable data.
+    Remove unusable entries and transform the data into an appropriate format for the model training.
 
     :param df: messages with assigned categories
     :return: cleaned data
     """
-    # transform data into appropriate columns
+    # split data into columns with appropriate column names
     categories = df['categories'].str.split(';', expand=True)
     category_columns = categories.iloc[0].apply(lambda x: x[:-2])
     categories.columns = category_columns
 
+    # transform data into numeric values
     for column in categories:
         categories[column] = categories[column].str[-1:]
         categories[column] = categories[column].astype(int)
@@ -43,34 +44,31 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 def save_data(df: pd.DataFrame, database_filename: str) -> None:
+    """
+    Save the cleaned data into a sqlLite database. A possibly already existing database file will be replaced.
+
+    :param df: cleaned data
+    :param database_filename: path of the database file
+    """
     engine = create_engine(f'sqlite:///{database_filename}')
-    df.to_sql('data', engine, index=False)
+    df.to_sql('data', engine, index=False, if_exists='replace')
 
 def main():
-    if len(sys.argv) == 4:
+    logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S', level=logging.INFO)
 
-        messages_filepath = 'disaster_categories.csv'
-        categories_filepath = 'disaster_messages.csv'
-        database_filepath = 'etl.db'
+    messages_filepath = 'disaster_categories.csv'
+    categories_filepath = 'disaster_messages.csv'
+    database_filepath = 'etl.db'
 
-        print('Loading data...')
-        df = load_data(messages_filepath, categories_filepath)
+    logging.info('Start loading data...')
+    df = load_data(messages_filepath, categories_filepath)
 
-        print('Cleaning data...')
-        df = clean_data(df)
-        
-        print('Saving data...\n    DATABASE: {}'.format(database_filepath))
-        save_data(df, database_filepath)
-        
-        print('Cleaned data saved to database!')
-    
-    else:
-        print('Please provide the filepaths of the messages and categories '\
-              'datasets as the first and second argument respectively, as '\
-              'well as the filepath of the database to save the cleaned data '\
-              'to as the third argument. \n\nExample: python process_data.py '\
-              'disaster_messages.csv disaster_categories.csv '\
-              'DisasterResponse.db')
+    logging.info('Start cleaning data...')
+    df = clean_data(df)
+
+    logging.info('Start saving data...')
+    save_data(df, database_filepath)
+    logging.info(f'Cleaned data saved to database: {database_filepath}')
 
 
 if __name__ == '__main__':
