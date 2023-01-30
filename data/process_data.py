@@ -60,14 +60,15 @@ def main():
     categories_filepath = 'disaster_messages.csv'
     database_filepath = 'etl.db'
 
-    logging.info('Start loading data...')
+    logging.info('Loading data...')
     df = load_data(messages_filepath, categories_filepath)
 
-    logging.info('Start cleaning data...')
+    logging.info('Cleaning data...')
     df = clean_data(df)
 
-    logging.info('Start saving data...')
+    logging.info('Saving data...')
     save_data(df, database_filepath)
+
     logging.info(f'Cleaned data saved to database: {database_filepath}')
 
 
