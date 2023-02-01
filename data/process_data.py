@@ -19,7 +19,7 @@ def load_data(messages_filepath: str, categories_filepath: str) -> pd.DataFrame:
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Remove unusable entries and transform the data into an appropriate format for the model training.
+    Remove unusable data and transform the data into an appropriate format for the model training.
 
     :param df: messages with assigned categories
     :return: cleaned data
@@ -41,11 +41,17 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df.drop_duplicates(subset=['id'], inplace=True)
     df = df[~df["message"].str.len() < 15]
 
+    # remove categories with less than 100 positive values
+    categories_without_100_positive_values = [column for column in category_columns if df[column].sum() < 100]
+    if categories_without_100_positive_values:
+        logging.warning(f'The column(s) {categories_without_100_positive_values} can not be used because they have less than 100 positive values.')
+        df.drop(columns=categories_without_100_positive_values, inplace=True)
+
     return df
 
 def save_data(df: pd.DataFrame, database_filename: str) -> None:
     """
-    Save the cleaned data into a sqlLite database. A possibly already existing database file will be replaced.
+    Save the cleaned data into a SQLite database. A possibly already existing database file will be replaced.
 
     :param df: cleaned data
     :param database_filename: path of the database file
