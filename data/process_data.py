@@ -40,11 +40,12 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     # remove duplicates and unusable messages
     df.drop_duplicates(subset=['id'], inplace=True)
     df = df[~df["message"].str.len() < 15]
+    df.drop(index=df[df["related"] == 2].index, inplace=True)
 
     # remove categories with less than 100 positive values
     categories_without_100_positive_values = [column for column in category_columns if df[column].sum() < 100]
     if categories_without_100_positive_values:
-        logging.warning(f'The column(s) {categories_without_100_positive_values} can not be used because they have less than 100 positive values.')
+        logging.warning(f'The column(s) {categories_without_100_positive_values} can not be used for prediction because they have less than 100 positive values.')
         df.drop(columns=categories_without_100_positive_values, inplace=True)
 
     return df
