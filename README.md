@@ -48,7 +48,7 @@ messages that will be classified
 Thanks to [Udacity](https://www.udacity.com/) for the introduction course in data science.
 
 <a href="https://www.appen.com/">
-  <img src="http://img0cf.b8cdn.com/images/logo/26/2056526_logo_1602844627_n.png" alt="Appen" height="95">
+  <img src="https://companieslogo.com/img/orig/APX.AX_BIG-d8c7efa0.png" alt="Appen" height="48">
 </a>
 
 Thanks to [Appen](https://www.appen.com/) for providing the data.
