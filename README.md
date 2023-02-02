@@ -28,10 +28,10 @@ messages that will be classified
 
 ## Get started
 - Install [python](https://www.python.org/downloads/) (used version: 3.9.13)
-- The required python libraries are listed in the [requirements.txt](https://github.com/PatrickChristoph/disaster_response/requirements.txt)
-- ETL Pipeline: To process the ETL pipeline you have to run the [process_data.py](https://github.com/PatrickChristoph/disaster_response/data/process_data.py)
-- ML Pipeline: To train the model based on the created database of the ETL pipeline you have to run the [train_classifier.py](https://github.com/PatrickChristoph/disaster_response/data/train_classifier.py)
-- Web App: Run the web app locally by executing the [run.py](https://github.com/PatrickChristoph/disaster_response/app/run.py) and follow the instructions
+- The required python libraries are listed in the [requirements.txt](https://github.com/PatrickChristoph/disaster_response/tree/main/requirements.txt)
+- ETL Pipeline: To process the ETL pipeline you have to run the [process_data.py](https://github.com/PatrickChristoph/disaster_response/tree/main/data/process_data.py)
+- ML Pipeline: To train the model based on the created database of the ETL pipeline you have to run the [train_classifier.py](https://github.com/PatrickChristoph/disaster_response/tree/main/data/train_classifier.py)
+- Web App: Run the web app locally by executing the [run.py](https://github.com/PatrickChristoph/disaster_response/tree/main/app/run.py) and follow the instructions
 
 ## Creator
 
@@ -48,7 +48,7 @@ messages that will be classified
 Thanks to [Udacity](https://www.udacity.com/) for the introduction course in data science.
 
 <a href="https://www.appen.com/">
-  <img src="http://img0cf.b8cdn.com/images/logo/26/2056526_logo_1602844627_n.png" alt="Appen" height="64">
+  <img src="http://img0cf.b8cdn.com/images/logo/26/2056526_logo_1602844627_n.png" alt="Appen" height="95">
 </a>
 
 Thanks to [Appen](https://www.appen.com/) for providing the data.
