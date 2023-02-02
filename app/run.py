@@ -7,7 +7,7 @@ from flask import Flask, render_template, request, jsonify
 from plotly.graph_objs import Bar, Histogram, Pie
 from sqlalchemy import create_engine
 
-from models.train_classifier import tokenize
+from models.train_classifier import tokenize, tokenize_without_numbers
 
 
 app = Flask(__name__)
@@ -122,8 +122,8 @@ def index():
 
 
 # web page that handles user query and displays model results
-@app.route('/go')
-def go():
+@app.route('/classify-message')
+def classify_message():
     # save user input in query
     query = request.args.get('query', '') 
 
@@ -131,9 +131,9 @@ def go():
     classification_labels = model.predict([query])[0]
     classification_results = dict(zip(df.columns[4:], classification_labels))
 
-    # This will render the go.html Please see that file. 
+    # This will render the classify-message.html Please see that file.
     return render_template(
-        'go.html',
+        'classify-message.html',
         query=query,
         classification_result=classification_results
     )
