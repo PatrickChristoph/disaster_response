@@ -1,36 +1,23 @@
+import joblib
 import json
 import plotly
 import pandas as pd
 
-from nltk.stem import WordNetLemmatizer
-from nltk.tokenize import word_tokenize
-
-from flask import Flask
-from flask import render_template, request, jsonify
-from plotly.graph_objs import Bar
-from sklearn.externals import joblib
+from flask import Flask, render_template, request, jsonify
+from plotly.graph_objs import Bar, Histogram, Pie
 from sqlalchemy import create_engine
+
+from models.train_classifier import tokenize
 
 
 app = Flask(__name__)
 
-def tokenize(text):
-    tokens = word_tokenize(text)
-    lemmatizer = WordNetLemmatizer()
-
-    clean_tokens = []
-    for tok in tokens:
-        clean_tok = lemmatizer.lemmatize(tok).lower().strip()
-        clean_tokens.append(clean_tok)
-
-    return clean_tokens
-
 # load data
-engine = create_engine('sqlite:///../data/YourDatabaseName.db')
-df = pd.read_sql_table('YourTableName', engine)
+sql_engine = create_engine('sqlite:///../data/etl.db')
+df = pd.read_sql_table('data', sql_engine.connect())
 
 # load model
-model = joblib.load("../models/your_model_name.pkl")
+model = joblib.load("../models/model.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
@@ -39,33 +26,93 @@ model = joblib.load("../models/your_model_name.pkl")
 def index():
     
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
-    genre_names = list(genre_counts.index)
-    
+    related_messages = df.groupby('related').count()['message']
+    messages_len = df['message'].str.len()
+    category_counts = df.iloc[:, 4:].sum().sort_values(ascending=True)
+
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
     graphs = [
         {
             'data': [
-                Bar(
-                    x=genre_names,
-                    y=genre_counts
+                Pie(
+                    labels=genre_counts.index,
+                    values=genre_counts,
+                    marker={'colors': [
+                         'rgb(112, 141, 219)',
+                         'rgb(176, 197, 255)',
+                         'rgb(42, 85, 201)'
+                    ]},
                 )
             ],
 
             'layout': {
-                'title': 'Distribution of Message Genres',
+                'title': 'Distribution of Message Genres'
+            }
+        },
+        {
+            'data': [
+                Pie(
+                    labels=["not related", "related"],
+                    values=related_messages,
+                    marker={'colors': [
+                        'rgb(112, 141, 219)',
+                        'rgb(176, 197, 255)'
+                    ]},
+                )
+            ],
+
+            'layout': {
+                'title': 'Proportion of Related Messages'
+            }
+        },
+        {
+            'data': [
+                Histogram(
+                    x=messages_len,
+                    marker={'color': 'rgb(112, 141, 219)'}
+                )
+            ],
+
+            'layout': {
+                'title': 'Messages Length (Histogram)',
                 'yaxis': {
-                    'title': "Count"
+                    'title': 'Messages Count'
                 },
                 'xaxis': {
-                    'title': "Genre"
+                    'title': 'Character Length (limited to 500)',
+                    'range': [0, 500],
+                    'autorange': False
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    y=category_counts.index,
+                    x=category_counts.values,
+                    orientation='h',
+                    marker={'color': 'rgb(112, 141, 219)'}
+                )
+            ],
+
+            'layout': {
+                'title': 'Category Distribution',
+                'yaxis': {
+                    'title': 'Category Name',
+                    'automargin': 'true'
+                },
+                'xaxis': {
+                    'title': 'Messages Count'
+                },
+                'height': 1000,
+                'margin': {
+                    'l': 150
                 }
             }
         }
     ]
-    
+
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
     graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
