@@ -1,6 +1,8 @@
 import logging
 import pickle
 import re
+import sys
+import warnings
 from typing import List, Tuple
 
 import nltk
@@ -76,10 +78,34 @@ def tokenize(text: str) -> List[str]:
 
     # lemmatize tokens
     tokens_with_pos_tag = convert_pos_tags_to_lemmatizer_params(nltk.pos_tag(tokens))
-    lemmatizer = nltk.stem.WordNetLemmatizer()
+    lemmatizer = nltk.WordNetLemmatizer()
     tokens = [lemmatizer.lemmatize(token, pos=pos_tag) if pos_tag is not None else token for token, pos_tag in tokens_with_pos_tag]
 
     return tokens
+
+
+def tokenize_without_numbers(text):
+    # remove special characters and lowercase all
+    text = re.sub(r'\W', ' ', text.lower())
+
+    # replace numbers with placeholder
+    text = re.sub(r'\d+', 'num_placeholder', text)
+
+    # split text into single tokens
+    tokens = nltk.tokenize.word_tokenize(text)
+
+    # remove unnecessary whitespaces
+    tokens = [token.strip() for token in tokens]
+
+    # get pos tags for appropriate lemmatization
+    tokens_with_pos_tag = convert_pos_tags_to_lemmatizer_params(nltk.pos_tag(tokens))
+
+    # lemmatize tokens
+    lemmatizer = nltk.WordNetLemmatizer()
+    tokens = [lemmatizer.lemmatize(token, pos=pos_tag) if pos_tag is not None else token for token, pos_tag in tokens_with_pos_tag]
+
+    return tokens
+
 
 def build_model() -> GridSearchCV:
     """
@@ -88,18 +114,20 @@ def build_model() -> GridSearchCV:
     :return: model pipeline
     """
     pipeline = Pipeline([
-        ('vect', CountVectorizer(tokenizer=tokenize)),
+        ('vect', CountVectorizer()),
         ('tfidf', TfidfTransformer()),
         ('clf', MultiOutputClassifier(RandomForestClassifier()))
     ])
 
     parameters = {
-        # 'vect__ngram_range': ((1, 1), (1, 2)),
-        'vect__max_df': [0.9, 1.0]
-        # 'vect__tokenizer': [tokenize, tokenize_without_stopwords, tokenize_without_numbers]
+        # best parameter used in the current model: tokenizer=tokenize_without_numbers, ngram_range=(1, 3), max_df=0.9, min_df=0.01
+        'vect__ngram_range': ((1, 1), (1, 2), (1, 3)),
+        'vect__max_df': [0.7, 0.8, 0.9, 0.95],
+        'vect__min_df': [0.1, 0.05, 0.02, 0.01, 0.0],
+        'vect__tokenizer': [tokenize, tokenize_without_numbers]
     }
 
-    return GridSearchCV(pipeline, param_grid=parameters, verbose=1, n_jobs=-2)
+    return GridSearchCV(pipeline, param_grid=parameters, verbose=2, n_jobs=-3)
 
 def evaluate_model(
         model: GridSearchCV,
@@ -117,9 +145,11 @@ def evaluate_model(
     """
     Y_pred = model.predict(X_test)
 
+    logging.info('Classification reports for each category:')
     for n, category_name in enumerate(category_names):
-        logging.info(f"Category: {category_name}")
-        logging.info(classification_report(Y_test.iloc[:, n], [pred_value[n] for pred_value in Y_pred]))
+        print(f'Category: {category_name}')
+        print(classification_report(Y_test.iloc[:, n], [pred_value[n] for pred_value in Y_pred]))
+
 
 def save_model(model: GridSearchCV, model_filepath: str) -> None:
     """
@@ -132,7 +162,8 @@ def save_model(model: GridSearchCV, model_filepath: str) -> None:
         pickle.dump(model, file, pickle.HIGHEST_PROTOCOL)
 
 def main():
-    logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S', level=logging.INFO)
+    logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S', level=logging.INFO, stream=sys.stdout)
+    warnings.filterwarnings("ignore")
 
     database_filepath = '../data/etl.db'
     model_filepath = 'model.pkl'
@@ -146,6 +177,7 @@ def main():
 
     logging.info('Training model...')
     model.fit(X_train, Y_train)
+    logging.info(f'Best model parameters:\n {model.best_params_}')
 
     logging.info('Evaluating model...')
     evaluate_model(model, X_test, Y_test, category_names)
