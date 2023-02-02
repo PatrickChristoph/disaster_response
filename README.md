@@ -23,7 +23,7 @@ messages that will be classified
 - `/data/process_data.py` - Python script that merge, clean and transform the disaster csv data
 - `/data/etl.db` - Output data of the process_data.py stored as a SQLite database
 - `/model/train_classifier.py` - Python script to train the model that classifies messages by disaster category
-- `/model/model.pkl` - Trained model stored as Pickle file
+- `/model/model.pkl` - Trained model stored as Pickle file (not uploaded to GitHub)
 - `/requirements.txt` - List of used python libraries
 
 ## Get started
