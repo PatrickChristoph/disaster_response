@@ -40,7 +40,7 @@ def index():
                     values=genre_counts,
                     marker={'colors': [
                          'rgb(100, 140, 219)',
-                         'rgb(176, 197, 255)',
+                         'rgb(111, 197, 255)',
                          'rgb(42, 85, 201)'
                     ]},
                 )
