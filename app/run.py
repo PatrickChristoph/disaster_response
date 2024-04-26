@@ -105,7 +105,7 @@ def index():
                 'xaxis': {
                     'title': 'Messages Count'
                 },
-                'height': 1000,
+                'height': 500,
                 'margin': {
                     'l': 150
                 }
