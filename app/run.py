@@ -39,7 +39,7 @@ def index():
                     labels=genre_counts.index,
                     values=genre_counts,
                     marker={'colors': [
-                         'rgb(112, 141, 219)',
+                         'rgb(100, 141, 219)',
                          'rgb(176, 197, 255)',
                          'rgb(42, 85, 201)'
                     ]},
@@ -56,7 +56,7 @@ def index():
                     labels=["not related", "related"],
                     values=related_messages,
                     marker={'colors': [
-                        'rgb(120, 141, 220)',
+                        'rgb(120, 141, 221)',
                         'rgb(180, 197, 255)'
                     ]},
                 )
