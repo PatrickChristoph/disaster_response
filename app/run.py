@@ -47,7 +47,7 @@ def index():
             ],
 
             'layout': {
-                'title': 'Distribution of Message Genres'
+                'title': 'Distribution of Message Genre'
             }
         },
         {
