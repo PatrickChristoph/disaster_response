@@ -81,7 +81,7 @@ def index():
                 },
                 'xaxis': {
                     'title': 'Character Length (limited to 500)',
-                    'range': [0, 500],
+                    'range': [0, 490],
                     'autorange': False
                 }
             }
