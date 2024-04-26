@@ -57,7 +57,7 @@ def index():
                     values=related_messages,
                     marker={'colors': [
                         'rgb(120, 141, 220)',
-                        'rgb(176, 197, 255)'
+                        'rgb(180, 197, 255)'
                     ]},
                 )
             ],
