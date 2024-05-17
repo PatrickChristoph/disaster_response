@@ -39,8 +39,6 @@ messages that will be classified
 - <https://www.linkedin.com/in/patrick-christoph/>
 - <https://github.com/PatrickChristoph>
 
-NEW COMMENT TEST MAIN
-
 ## Thanks
 
 <a href="https://www.udacity.com/">
