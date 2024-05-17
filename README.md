@@ -41,7 +41,7 @@ messages that will be classified
 
 ## Thanks
 
-Local Test Branch
+Local Test Branch - remove
 
 <a href="https://www.udacity.com/">
   <img src="https://www.udacity.com/images/svgs/udacity-tt-logo.svg" alt="Udacity" width="192" height="48">
