@@ -41,8 +41,6 @@ messages that will be classified
 
 ## Thanks
 
-Local Test Branch - remove
-
 Meanwhile, main changes something...
 
 and something more
