@@ -55,4 +55,6 @@ Thanks to [Udacity](https://www.udacity.com/) for the introduction course in dat
   <img src="https://companieslogo.com/img/orig/APX.AX_BIG-d8c7efa0.png" alt="Appen" height="48">
 </a>
 
+ok, wow
+
 Thanks to [Appen](https://www.appen.com/) for providing the data.
